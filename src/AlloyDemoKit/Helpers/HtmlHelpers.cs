@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.WebPages;
 using EPiServer.Core;
 using EPiServer.ServiceLocation;
 using AlloyDemoKit.Business;
@@ -35,7 +36,7 @@ namespace AlloyDemoKit.Helpers
         public static IHtmlString MenuList(
             this HtmlHelper helper, 
             ContentReference rootLink, 
-            Func<MenuItem, System.Web.WebPages.HelperResult> itemTemplate = null, 
+            Func<MenuItem, HelperResult> itemTemplate = null, 
             bool includeRoot = false, 
             bool requireVisibleInMenu = true, 
             bool requirePageTemplate = true)
@@ -85,9 +86,9 @@ namespace AlloyDemoKit.Helpers
             return menuItem;
         }
 
-        private static Func<MenuItem, System.Web.WebPages.HelperResult> GetDefaultItemTemplate(HtmlHelper helper)
+        private static Func<MenuItem, HelperResult> GetDefaultItemTemplate(HtmlHelper helper)
         {
-            return x => new System.Web.WebPages.HelperResult(writer => writer.Write(helper.PageLink(x.Page)));
+            return x => new HelperResult(writer => writer.Write(helper.PageLink(x.Page)));
         }
 
         public class MenuItem
@@ -107,7 +108,12 @@ namespace AlloyDemoKit.Helpers
         public static MvcHtmlString RenderExtendedCSS(this HtmlHelper helper, string inline, LinkItemCollection cssFiles)
         {
             StringBuilder outputCSS = new StringBuilder(string.Empty);
-            StartPage start = ServiceLocator.Current.GetInstance<IContentLoader>().Get<StartPage>(ContentReference.StartPage);
+            Models.Pages.StartPage start = ServiceLocator.Current.GetInstance<IContentLoader>().Get<Models.Pages.StartPage>(ContentReference.StartPage);
+
+            if (!string.IsNullOrWhiteSpace(start.GoogleFont))
+            {
+                outputCSS.AppendLine(GenerateGoogleFontTag(start.GoogleFont));
+            }
 
             if ((cssFiles == null || cssFiles.Count == 0) && start.CSSFiles != null)
             {
@@ -115,23 +121,37 @@ namespace AlloyDemoKit.Helpers
             }           
             AppendFiles(cssFiles, outputCSS, CssFormat);            
 
+            // Inlined CSS & Google Font
+            outputCSS.AppendLine("<style>");
+            outputCSS.AppendLine(SetFontName(start.GoogleFont));                
             if (!string.IsNullOrWhiteSpace(inline))
             {
-                outputCSS.AppendLine("<style>");
                 outputCSS.AppendLine(inline);
-                outputCSS.AppendLine("</style>");
             }
             else
             {
-                string startCSS;
-                
-                startCSS = start.CSS;
-                outputCSS.AppendLine("<style>");
-                outputCSS.AppendLine(startCSS);
-                outputCSS.AppendLine("</style>");
+                outputCSS.AppendLine(start.CSS);
             }
+            outputCSS.AppendLine("</style>");
 
             return new MvcHtmlString(outputCSS.ToString());
+        }
+
+        public static string GenerateGoogleFontTag(string fontName)
+        {
+            string tag = string.Format("<link href = \"https://fonts.googleapis.com/css?family={0}\" rel=\"stylesheet\">", fontName);
+            return tag;
+        }
+
+        public static string SetFontName(string fontName)
+        {
+            string named = string.Empty;
+
+            if (!string.IsNullOrWhiteSpace(fontName))
+            {
+                named = "'" + fontName.Replace("-", " ") + "', ";
+            }
+            return "body, h1, h1.jumbotron, h2, h3, .subHeader, .introduction, p, a, .alloyMenu  { font-family: " + named + "Arial, Helvetica, sans-serif; }";
         }
 
         public static MvcHtmlString RenderExtendedScripts(this HtmlHelper helper, string inline)
@@ -163,7 +183,8 @@ namespace AlloyDemoKit.Helpers
 
             foreach (var item in files.Where(item => !string.IsNullOrEmpty(item.Href)))
             {
-                var map = PermanentLinkMapStore.Find(new UrlBuilder(item.Href)) as PermanentContentLinkMap;
+                IPermanentLinkMapper mapper = ServiceLocator.Current.GetInstance<IPermanentLinkMapper>();
+                var map = mapper.Find(new UrlBuilder(item.Href)) as PermanentLinkMap;
                 outputString.AppendLine(map == null
                     ? string.Format(formatString, item.GetMappedHref())
                     : string.Format(formatString, UrlResolver.Current.GetUrl(map.ContentReference)));

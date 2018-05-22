@@ -10,7 +10,12 @@ namespace AlloyDemoKit.Business.Channels
     public abstract class DisplayResolutionBase : IDisplayResolution
     {
         private Injected<LocalizationService> LocalizationService { get; set; }
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DisplayResolutionBase"/> class.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="width">The width in pixels.</param>
+        /// <param name="height">The height in pixels.</param>
         protected DisplayResolutionBase(string name, int width, int height)
         {
             Id = GetType().FullName;

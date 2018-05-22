@@ -10,6 +10,7 @@ using EPiServer.Framework.Initialization;
 using EPiServer.Logging;
 using EPiServer.ServiceLocation;
 using EPiServer.Web;
+using System.Collections.Specialized;
 
 namespace AlloyDemoKit.Business.Initialization
 {
@@ -45,7 +46,8 @@ namespace AlloyDemoKit.Business.Initialization
                         contentLoader.Get<PageData>(GlobalNewsContainer).PageName, 
                         GlobalNewsContainer.ID);
 
-                    var provider = new ClonedContentProvider(GlobalNewsContainer.ToPageReference(), startPage.GlobalNewsPageLink, startPage.Category);
+                    var provider = new ClonedContentProvider();
+                    provider.Initialize(GlobalNewsContainer.ToPageReference(), startPage.GlobalNewsPageLink, startPage.Category);
 
                     providerManager.ProviderMap.AddProvider(provider);
                 }
@@ -76,7 +78,6 @@ namespace AlloyDemoKit.Business.Initialization
                 }
 
                 int pageLinkId;
-
                 if (!int.TryParse(pageLinkIdString, out pageLinkId) || pageLinkId == 0)
                 {
                     Logger.Error("The '{0}' app setting was not set to a valid page ID, expected a positive integer", appSettingName);

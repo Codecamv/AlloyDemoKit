@@ -3,22 +3,21 @@ using System.Linq;
 using System.Web.Mvc;
 using EPiServer.Core;
 using EPiServer.Filters;
-using AlloyDemoKit.Models.Pages.Business;
 using AlloyDemoKit.Models.Pages.Models.Blocks;
 using EPiServer.Web.Mvc;
 using EPiServer.Web.Routing;
 using EPiServer.ServiceLocation;
 using EPiServer.DataAbstraction;
 using AlloyDemoKit.Models.Pages.Models.Pages;
-using AlloyDemoKit.Models.Pages.Business.Tags;
+using AlloyDemoKit.Models.Pages.Tags;
 using System.Text;
 using System;
 using System.Text.RegularExpressions;
 using EPiServer.Core.Html;
-using EPiServer.DynamicContent;
 using EPiServer;
 using AlloyDemoKit.Business;
 using EPiServer.Templates.Blog.Mvc.Models.ViewModels;
+//using EPiServer.DynamicContent.Internal;
 
 namespace AlloyDemoKit.Models.Pages.Controllers
 {
@@ -110,7 +109,7 @@ namespace AlloyDemoKit.Models.Pages.Controllers
 
             //If the MainBody contains DynamicContents, replace those with an empty string
             StringBuilder regexPattern = new StringBuilder(@"<span[\s\W\w]*?classid=""");
-            regexPattern.Append(DynamicContentFactory.Instance.DynamicContentId.ToString());
+            //regexPattern.Append(DynamicContentFactory.Instance.DynamicContentId.ToString());
             regexPattern.Append(@"""[\s\W\w]*?</span>");
             previewText = Regex.Replace(previewText, regexPattern.ToString(), string.Empty, RegexOptions.IgnoreCase | RegexOptions.Multiline);
 
@@ -120,7 +119,7 @@ namespace AlloyDemoKit.Models.Pages.Controllers
 
         private IEnumerable<PageData> FindPages(BlogListBlock currentBlock, Category category)
         {
-            var pageRouteHelper = ServiceLocator.Current.GetInstance<PageRouteHelper>();
+            var pageRouteHelper = ServiceLocator.Current.GetInstance<IPageRouteHelper>();
             PageData currentPage = pageRouteHelper.Page ?? contentLoader.Get<PageData>(ContentReference.StartPage);
 
             var listRoot = currentBlock.Root ?? currentPage.ContentLink.ToPageReference();
@@ -143,7 +142,7 @@ namespace AlloyDemoKit.Models.Pages.Controllers
                 if (currentBlock.PageTypeFilter != null)
                 {
                     pages = contentLoader.GetChildren<PageData>(listRoot)
-                        .Where(p => p.PageTypeID == currentBlock.PageTypeFilter.ID);
+                        .Where(p => p.ContentTypeID == currentBlock.PageTypeFilter.ID);
                 }
                 else
                 {

@@ -16,7 +16,7 @@ namespace AlloyDemoKit.Business
         /// <returns></returns>
         public static PageType GetPageType(this Type pageType)
         {
-            var pageTypeRepository = ServiceLocator.Current.GetInstance<PageTypeRepository>();
+            var pageTypeRepository = ServiceLocator.Current.GetInstance<IContentTypeRepository<PageType>>();
 
             return pageTypeRepository.Load(pageType);
         }

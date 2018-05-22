@@ -1,26 +1,18 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using EPiServer.Core;
-using EPiServer.Search;
-using AlloyDemoKit.Models.Pages.Business;
 using AlloyDemoKit.Models.Pages.Models.Pages;
-using EPiServer.Web;
-using EPiServer.Web.Hosting;
-using EPiServer.Web.Mvc.Html;
 using EPiServer.DataAbstraction;
 using System;
 using System.Text;
 using System.Text.RegularExpressions;
 using EPiServer.Core.Html;
-using EPiServer.DynamicContent;
 using EPiServer.ServiceLocation;
-using EPiServer.Web.Routing;
-using AlloyDemoKit.Models.Pages.Business.Tags;
+using AlloyDemoKit.Models.Pages.Tags;
 using EPiServer.Web.Mvc;
 using EPiServer.Templates.Blog.Mvc.Models.ViewModels;
 using AlloyDemoKit.Models.ViewModels;
+//using EPiServer.DynamicContent.Internal;
 
 namespace AlloyDemoKit.Models.Pages.Controllers
 {
@@ -54,15 +46,13 @@ namespace AlloyDemoKit.Models.Pages.Controllers
                 Tags = GetTags(currentPage),
                 PreviewText = GetPreviewText(currentPage),
                 MainBody = currentPage.MainBody,
-                StartPublish = currentPage.StartPublish
+                StartPublish = currentPage.StartPublish.Value
             };
 
             var editHints = ViewData.GetEditHints<BlogItemPageModel, BlogItemPage>();
             editHints.AddConnection(m => m.Category, p => p.Category);
             editHints.AddFullRefreshFor(p => p.Category);
             editHints.AddFullRefreshFor(p => p.StartPublish);
-            
-           
 
             return PartialView("Full", model);
         }
@@ -71,7 +61,7 @@ namespace AlloyDemoKit.Models.Pages.Controllers
         {
              var model = PageViewModel.Create(currentPage);
 
-          
+
                 //Connect the view models logotype property to the start page's to make it editable
                 var editHints = ViewData.GetEditHints<PageViewModel<BlogItemPage>, BlogItemPage>();
                 editHints.AddConnection(m => m.CurrentPage.Category, p => p.Category);
@@ -96,7 +86,7 @@ namespace AlloyDemoKit.Models.Pages.Controllers
             return tags;
         }
 
-        
+
 
         protected string GetPreviewText(BlogItemPage page)
         {
@@ -119,13 +109,13 @@ namespace AlloyDemoKit.Models.Pages.Controllers
 
             //If the MainBody contains DynamicContents, replace those with an empty string
             StringBuilder regexPattern = new StringBuilder(@"<span[\s\W\w]*?classid=""");
-            regexPattern.Append(DynamicContentFactory.Instance.DynamicContentId.ToString());
+            //regexPattern.Append(DynamicContentFactory.Instance.DynamicContentId.ToString());
             regexPattern.Append(@"""[\s\W\w]*?</span>");
             previewText = Regex.Replace(previewText, regexPattern.ToString(), string.Empty, RegexOptions.IgnoreCase | RegexOptions.Multiline);
 
             return TextIndexer.StripHtml(previewText, PreviewTextLength);
         }
 
-    
+
     }
 }

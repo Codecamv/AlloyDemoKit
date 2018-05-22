@@ -7,6 +7,9 @@ namespace AlloyDemoKit
 
     public class Global
     {
+        public static readonly string LoginPath = "/util/login.aspx";
+        public static readonly string AppRelativeLoginPath = string.Format("~{0}", LoginPath);
+
         /// <summary>
         /// Group names for content types and properties
         /// </summary>
@@ -85,6 +88,7 @@ namespace AlloyDemoKit
         {
             public const string Contact = "contact";
             public const string Strings = "StringList";
+            public const string StringsCollection = "StringsCollection";
             public const string Parking = "parking";
         }
 

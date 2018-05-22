@@ -3,13 +3,13 @@ using EPiServer.Core;
 using EPiServer.DataAbstraction;
 using EPiServer.DataAnnotations;
 using AlloyDemoKit.Business.Rendering;
-using AlloyDemoKit.Models.Properties;
 using EPiServer.Web;
 using EPiServer.Shell.ObjectEditing;
 using System.Collections.Generic;
 using EPiServer;
 using EPiServer.ServiceLocation;
 using EPiServer.SpecializedProperties;
+using AlloyDemoKit.Business.EditorDescriptors;
 
 namespace AlloyDemoKit.Models.Pages
 {
@@ -41,13 +41,14 @@ namespace AlloyDemoKit.Models.Pages
             Order = 200)]
         [CultureSpecific]
         [BackingType(typeof(PropertyStringList))]
-        public virtual string[] MetaKeywords { get; set; }
+        [UIHint(Global.SiteUIHints.Strings)]
+        public virtual IList<string> MetaKeywords { get; set; }
 
         [Display(
             GroupName = Global.GroupNames.MetaData,
             Order = 300)]
         [CultureSpecific]
-        [UIHint(UIHint.LongString)]
+        [UIHint(UIHint.Textarea)]
         public virtual string MetaDescription { get; set; }
 
         [Display(
@@ -72,7 +73,7 @@ namespace AlloyDemoKit.Models.Pages
             get
             {
                 var teaserText = this.GetPropertyValue(p => p.TeaserText);
-              
+
                 // Use explicitly set teaser text, otherwise fall back to description
                 return !string.IsNullOrWhiteSpace(teaserText)
                        ? teaserText
@@ -112,6 +113,10 @@ namespace AlloyDemoKit.Models.Pages
 
         private ContentReference FindEffectiveStartPage(ContentReference currentPageRef, IContentLoader loader)
         {
+            if (ContentReference.IsNullOrEmpty(currentPageRef))
+            {
+                return SiteDefinition.Current.StartPage;
+            }
             if (SiteDefinition.Current.StartPage == currentPageRef)
             {
                 return currentPageRef;
@@ -143,6 +148,14 @@ namespace AlloyDemoKit.Models.Pages
             get { return "teaserblock"; } //Page partials should be style like teasers
         }
 
+
+        [Display(
+           Name = "Google Font",
+           GroupName = Global.GroupNames.Styles,
+           Order = 75)]
+        [SelectOne(SelectionFactoryType = typeof(FontSelectionFactory))]
+        public virtual string GoogleFont { get; set; }
+
         [Display(
         Name = "CSS Files",
         GroupName = Global.GroupNames.Styles,
@@ -152,7 +165,7 @@ namespace AlloyDemoKit.Models.Pages
         [Display(
             GroupName = Global.GroupNames.Styles,
             Order = 110)]
-        [UIHint(UIHint.LongString)]
+        [UIHint(UIHint.Textarea)]
         public virtual string CSS { get; set; }
 
 
@@ -165,7 +178,7 @@ namespace AlloyDemoKit.Models.Pages
         [Display(
             GroupName = Global.GroupNames.Scripts,
             Order = 110)]
-        [UIHint(UIHint.LongString)]
+        [UIHint(UIHint.Textarea)]
         public virtual string Scripts { get; set; }
 
         [Display(

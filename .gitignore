@@ -129,7 +129,7 @@ publish/
 # Publish Web Output
 *.[Pp]ublish.xml
 *.azurePubxml
-# TODO: Comment the next line if you want to checkin your web deploy settings 
+# TODO: Comment the next line if you want to checkin your web deploy settings
 # but database connection strings (with potential passwords) will be unencrypted
 *.pubxml
 *.publishproj
@@ -194,3 +194,22 @@ FakesAssemblies/
 
 # Visual Studio 6 workspace options file
 *.opt
+/src/AlloyDemoKit/License.config
+/src/AlloyDemoKit/modules/Embed5.aspx.designer.cs
+/src/AlloyDemoKit/modules/Embed5.aspx.cs
+/src/AlloyDemoKit/modules/Embed5.aspx
+/src/AlloyDemoKit/modules/Embed4.aspx.designer.cs
+/src/AlloyDemoKit/modules/Embed4.aspx.cs
+/src/AlloyDemoKit/modules/Embed4.aspx
+/src/AlloyDemoKit/modules/Embed3.aspx.designer.cs
+/src/AlloyDemoKit/modules/Embed3.aspx.cs
+/src/AlloyDemoKit/modules/Embed3.aspx
+/src/AlloyDemoKit/modules/Embed2.aspx.designer.cs
+/src/AlloyDemoKit/modules/Embed2.aspx.cs
+/src/AlloyDemoKit/modules/Embed2.aspx
+/src/AlloyDemoKit/modules/Embed.aspx.designer.cs
+/src/AlloyDemoKit/modules/Embed.aspx.cs
+/src/AlloyDemoKit/modules/Embed.aspx
+/src/AlloyDemoKit/modules/_protected/PowerBI
+/src/AlloyDemoKit/modules/_protected/Peerius
+/src/AlloyDemoKit/App_Data/**/3p!_*

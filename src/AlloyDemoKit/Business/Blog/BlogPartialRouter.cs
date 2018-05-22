@@ -10,15 +10,15 @@ using System.Web;
 using System.Web.Routing;
 using EPiServer.ServiceLocation;
 
-namespace AlloyDemoKit.Models.Pages.Business.Initialization
+namespace AlloyDemoKit.Models.Pages.Initialization
 {
     public class BlogPartialRouter : IPartialRouter<BlogStartPage, Category>
     {
 
         public PartialRouteData GetPartialVirtualPath(Category cat, string language, RouteValueDictionary routeValues, RequestContext requestContext)
         {
-            var contentLink = ContentRoute.GetValue("node", requestContext, routeValues) as ContentReference;
-         
+            var contentLink = requestContext.GetRouteValue("node", routeValues) as ContentReference;
+
             if (PageEditing.PageIsInEditMode)
             {
                 return null;
@@ -51,10 +51,10 @@ namespace AlloyDemoKit.Models.Pages.Business.Initialization
                     segmentContext.RoutedContentLink = content.ContentLink;
 
                     segmentContext.SetCustomRouteData<Category>("category", category);
-                
+
 
                     return content;
-                }                
+                }
             }
 
             return null;
